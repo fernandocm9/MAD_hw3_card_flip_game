@@ -1,14 +1,20 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class Card {
   String name;
-  String image;
+  String frontImage;
+  String backImage;
   bool isFlipped;
+  bool isMatched;
 
   Card({
     required this.name,
-    required this.image,
+    required this.frontImage,
+    required this.backImage,
     required this.isFlipped,
+    required this.isMatched,
   });
 }
 
@@ -22,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flip Card Game',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
@@ -41,26 +47,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String  backUrl = 'https://i.ebayimg.com/images/g/1E4AAOSwJfdiE9eO/s-l1200.jpg';
+  String backImage = 'https://i.ebayimg.com/images/g/1E4AAOSwJfdiE9eO/s-l1200.jpg';
   List<Card> _cardList = [];
   List<Card> _flippedCards = [];
 
-  void _createCards(){
+  final frontImages = [
+    'https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/220px-Cat_November_2010-1a.jpg',
+    'https://bestfriends.org/sites/default/files/styles/hero_mobile/public/hero-dash/Victory3427MW_Dashboard_Standard.jpg?h=b02ff9d2&itok=HRMUvhfY',
+    'https://images.pexels.com/photos/47547/squirrel-animal-cute-rodents-47547.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'https://images.pexels.com/photos/34098/south-africa-hluhluwe-giraffes-pattern.jpg?auto=compress&cs=tinysrgb&w=1200',
+    'https://images.pexels.com/photos/792381/pexels-photo-792381.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'https://images.pexels.com/photos/62289/yemen-chameleon-chamaeleo-calyptratus-chameleon-reptile-62289.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    'https://images.pexels.com/photos/52500/horse-herd-fog-nature-52500.jpeg?auto=compress&cs=tinysrgb&w=1200'
+  ];
+
+  void _createCards() {
     _cardList.clear();
     _flippedCards.clear();
 
-    for (int i = 0; i < 8; i++){
-      _cardList.add(Card(name: 'card$i', image: backUrl, isFlipped: false));
-      _cardList.add(Card(name: 'card$i', image: backUrl, isFlipped: false));
+    for (int i = 0; i < 8; i++) {
+      _cardList.add(Card(
+          name: 'card$i',
+          frontImage: frontImages[i],
+          backImage: backImage,
+          isFlipped: false,
+          isMatched: false));
+      _cardList.add(Card(
+          name: 'card$i',
+          frontImage: frontImages[i],
+          backImage: backImage,
+          isFlipped: false,
+          isMatched: false));
     }
+    _cardList.shuffle(Random());
+    setState(() {});
   }
-  // int _counter = 0;
-
-  // void _incrementCounter() {
-  //   setState(() {
-  //     _counter++;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,18 +91,53 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-          ],
-        ),
+      body: GridView.count(
+          crossAxisCount: 2,
+          children: List.generate(_cardList.length, (index) {
+            return GestureDetector(
+              onTap: () {
+                if (!_cardList[index].isFlipped && !_cardList[index].isMatched) {
+                  setState(() {
+                    _cardList[index].isFlipped = true;
+                    _flippedCards.add(_cardList[index]);
+
+                    if (_flippedCards.length == 2) {
+                      if (_flippedCards[0].name == _flippedCards[1].name) {
+                        _flippedCards[0].isMatched = true;
+                        _flippedCards[1].isMatched = true;
+                        _flippedCards.clear();
+                      } else {
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          setState(() {
+                            _flippedCards[0].isFlipped = false;
+                            _flippedCards[1].isFlipped = false;
+                            _flippedCards.clear();
+                          });
+                        });
+                      }
+                    }
+                  });
+                }
+              },
+              child: Container(
+                margin: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: NetworkImage(_cardList[index].isFlipped
+                        ? _cardList[index].frontImage
+                        : backImage),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            );
+          })),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createCards,
+        child: const Icon(Icons.add),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), 
     );
   }
 }

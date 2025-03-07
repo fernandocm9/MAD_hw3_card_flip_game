@@ -41,6 +41,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String  backUrl = 'https://i.ebayimg.com/images/g/1E4AAOSwJfdiE9eO/s-l1200.jpg';
+  List<Card> _cardList = [];
+  List<Card> _flippedCards = [];
+
+  void _createCards(){
+    _cardList.clear();
+    _flippedCards.clear();
+
+    for (int i = 0; i < 8; i++){
+      _cardList.add(Card(name: 'card$i', image: backUrl, isFlipped: false));
+      _cardList.add(Card(name: 'card$i', image: backUrl, isFlipped: false));
+    }
+  }
   // int _counter = 0;
 
   // void _incrementCounter() {

@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: const Text('Done'),
               ),
             ],
           );
@@ -134,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         _flippedCards[0].isMatched = true;
                         _flippedCards[1].isMatched = true;
                         _flippedCards.clear();
+                        winCondition();
                       } else {
                         Future.delayed(const Duration(milliseconds: 500), () {
                           setState(() {

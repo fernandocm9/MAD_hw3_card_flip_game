@@ -62,6 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
     'https://images.pexels.com/photos/52500/horse-herd-fog-nature-52500.jpeg?auto=compress&cs=tinysrgb&w=1200'
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _createCards();
+  }
+
   void _createCards() {
     _cardList.clear();
     _flippedCards.clear();
@@ -84,6 +90,28 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void winCondition() {
+    if (_cardList.every((element) => element.isMatched)) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Congratulations!'),
+            content: const Text('You won the game!'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: 4,
           children: List.generate(_cardList.length, (index) {
             return GestureDetector(
               onTap: () {
@@ -120,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
               child: Container(
-                margin: const EdgeInsets.all(5),
+                margin: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -134,10 +162,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           })),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createCards,
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
